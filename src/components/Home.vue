@@ -7,6 +7,8 @@
       <div class="selected-image" v-if="selectedImage"
         :style="{backgroundImage: 'url(data:'+selectedImage.type+';base64,'+selectedImage.data+')'}">
         <button class="close-selected-image" @click="selectedImage = undefined">x</button>
+        <button class="prev-image" @click="prevImage"><</button>
+        <button class="next-image" @click="nextImage">></button>
       </div>
       <div class="upload" v-if="auth">
           <input type="file" @change.stop.prevent="droppedFile($event)">
@@ -33,6 +35,16 @@ export default {
         this.$firebaseRefs.images.push({type: file.type, data: b64})
       }
       fr.readAsBinaryString(file)
+    },
+    nextImage () {
+      let index = this.images.findIndex(i => i === this.selectedImage)
+      if (index === this.images.length - 1) this.selectedImage = this.images[0]
+      else this.selectedImage = this.images[index + 1]
+    },
+    prevImage () {
+      let index = this.images.findIndex(i => i === this.selectedImage)
+      if (index === 0) this.selectedImage = this.images[this.images.length - 1]
+      else this.selectedImage = this.images[index - 1]
     }
   }
 }
@@ -49,6 +61,7 @@ export default {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 50% 50%;
+    cursor: pointer;
   }
   @media (max-width: 667px) {
     .image {
@@ -108,10 +121,25 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
-    background: none;
     border: none;
     font-family: Menlo;
     font-size: 2rem;
     cursor: pointer;
+  }
+  .next-image,
+  .prev-image {
+    background-color: rgba(55, 58, 60, 0.7);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    font-family: Menlo;
+    cursor: pointer;
+  }
+  .next-image {
+    right: 0;
+  }
+  .prev-image {
+    .left: 0;
   }
 </style>
