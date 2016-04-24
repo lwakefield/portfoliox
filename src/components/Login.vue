@@ -95,10 +95,5 @@ export default {
     }
     input, button {
         margin: 0.5rem 0;
-        background: none;
-        border: 2px solid #f7f7f9;
-        color: inherit;
-        font-family: inherit;
-        font-size: inherit;
     }
 </style>
