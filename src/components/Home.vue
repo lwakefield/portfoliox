@@ -5,7 +5,8 @@
         @click="selectedImage = image">
       </div>
       <div class="selected-image" v-if="selectedImage"
-        :style="{backgroundImage: 'url(data:'+selectedImage.type+';base64,'+selectedImage.data+')'}">
+        :style="{backgroundImage: 'url(data:'+selectedImage.type+';base64,'+selectedImage.data+')'}"
+        transition="fade">
         <button class="close-selected-image" @click="selectedImage = undefined">x</button>
         <button class="prev-image" @click="prevImage"><</button>
         <button class="next-image" @click="nextImage">></button>
@@ -91,53 +92,36 @@ export default {
     display: flex;
     flex-flow: row wrap;
   }
-  .image {
+  .image,
+  .upload {
     width: calc(100vw / 3);
     height: calc(100vw / (3 * 1.618));
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 50% 50%;
     cursor: pointer;
-  }
-  @media (max-width: 667px) {
-    .image {
-      width: 100vw;
-      height: 100vw;
-    }
-  }
-  .upload {
-    font-size: 12rem;
-    width: calc(100vw / 3);
-    width: calc(100vw / 3);
-    position: relative;
     border: 0px solid #f7f7f9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     transition: all 0.2s ease;
-    opacity: 0.1;
   }
   @media (max-width: 667px) {
+    .image,
     .upload {
       width: 100vw;
-      height: 100vw;
+      height: calc(100vw / 1.618);
     }
   }
+  .image:hover,
   .upload:hover {
     border: 10px solid #f7f7f9;
     opacity: 1;
   }
-  .selected-image {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(55, 58, 60, 0.7);
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-    background-size: contain;
-    z-index: 1;
+  .upload {
+    font-size: 12rem;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.1;
   }
   input[type="file"] {
     position: absolute;
@@ -152,6 +136,28 @@ export default {
     content: '+';
     display: block;
     font-family: Menlo;
+  }
+  .fade-transition {
+    transition: 0.3s all ease;
+    opacity: 1;
+    transform: scale(1);
+  }
+  .fade-enter,
+  .fade-leave {
+    opacity: 0;
+    transform: scale(0);
+  }
+  .selected-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(55, 58, 60, 0.7);
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: contain;
+    z-index: 1;
   }
   .close-selected-image {
     position: absolute;
