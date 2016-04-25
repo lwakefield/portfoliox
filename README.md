@@ -8,7 +8,7 @@ It is super simple, using Vue.js as the framework and Firebase as the backend.
 Images are cached in LocalStorage, so once visited for the first time,
 subsequent visits should be FAST
 
-![screenshot](https://i.imgur.com/dI4uheY.jpg)
+![screenshot](https://i.imgur.com/CBQsRo4.png)
 
 
 ## Before anything else...
