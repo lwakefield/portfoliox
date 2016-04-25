@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a class="logout" href="#" @click.stop.prevent="logout" v-if="auth">Logout</a>
+    <button class="logout" @click.stop.prevent="logout" v-if="auth">Logout</button>
     <router-view></router-view>
   </div>
 </template>
@@ -46,5 +46,7 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
+    background-color: #373a3c;
+    z-index: 1;
   }
 </style>

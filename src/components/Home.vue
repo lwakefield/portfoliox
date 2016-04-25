@@ -56,8 +56,8 @@ export default {
     flex-flow: row wrap;
   }
   .image {
-    width: 20vw;
-    height: 20vw;
+    width: 25vw;
+    height: 25vw;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 50% 50%;
@@ -71,14 +71,14 @@ export default {
   }
   .upload {
     font-size: 12rem;
-    width: 20vw;
-    height: 20vw;
+    width: 25vw;
+    height: 25vw;
     position: relative;
-    border: 1px solid #f7f7f9;
+    border: 0px solid #f7f7f9;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.1s ease;
+    transition: all 0.2s ease;
     opacity: 0.1;
   }
   @media (max-width: 667px) {
