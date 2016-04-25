@@ -16,7 +16,7 @@ Vue.mixin({
   }
 })
 
-let router = new VueRouter()
+let router = new VueRouter({history: true})
 router.map({
   '/login': {
     component: require('./components/Login')
