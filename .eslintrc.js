@@ -8,7 +8,8 @@ module.exports = {
   ],
   'globals': {
     'FileReader': true,
-    'btoa': true
+    'btoa': true,
+    'localStorage': true
   },
   // add your custom rules here
   'rules': {

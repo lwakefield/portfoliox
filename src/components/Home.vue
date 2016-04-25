@@ -19,12 +19,13 @@
 
 <script>
 import Firebase from 'firebase'
+import crypto from 'crypto'
 export default {
   data () {
-    return {selectedImage: undefined}
+    return {images: [], selectedImage: undefined}
   },
   firebase: {
-    images: new Firebase('https://portfoliox.firebaseio.com/images')
+    imageIndex: new Firebase('https://portfoliox.firebaseio.com/image_index')
   },
   methods: {
     droppedFile (event) {
@@ -32,7 +33,12 @@ export default {
       let fr = new FileReader()
       fr.onload = e => {
         let b64 = btoa(e.target.result)
-        this.$firebaseRefs.images.push({type: file.type, data: b64})
+        this.$firebaseRefs.root.child('images').push({type: file.type, data: b64})
+        .then(data => {
+          let hash = crypto.createHash('sha256').update(e.target.result)
+          let digest = hash.digest('hex')
+          this.$firebaseRefs.imageIndex.child(data.key()).set(digest)
+        })
       }
       fr.readAsBinaryString(file)
     },
@@ -46,6 +52,36 @@ export default {
       if (index === 0) this.selectedImage = this.images[this.images.length - 1]
       else this.selectedImage = this.images[index - 1]
     }
+  },
+  ready () {
+    let keys = Object.keys(localStorage)
+    keys.forEach(key => {
+      if (!key.startsWith('cachedImage.')) return
+      let image = JSON.parse(localStorage[key])
+      this.images.push(image)
+    })
+
+    this.$firebaseRefs.imageIndex.on('value', indexSnap => {
+      let val = indexSnap.val()
+      if (!val) return
+      let keys = Object.keys(val)
+      this.images = []
+      for (let key of keys) {
+        let hash = val[key]
+        let imageString = localStorage[`cachedImage.${key}`]
+        let image = imageString ? JSON.parse(imageString) : undefined
+        if (!image || image.hash !== hash) {
+          this.$firebaseRefs.root.child(`images/${key}`).once('value', imageSnap => {
+            image = imageSnap.val()
+            image.hash = hash
+            localStorage[`cachedImage.${key}`] = JSON.stringify(image)
+            this.images.push(image)
+          })
+        } else {
+          this.images.push(image)
+        }
+      }
+    })
   }
 }
 </script>
@@ -56,8 +92,8 @@ export default {
     flex-flow: row wrap;
   }
   .image {
-    width: 25vw;
-    height: 25vw;
+    width: calc(100vw / 3);
+    height: calc(100vw / (3 * 1.618));
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 50% 50%;
@@ -71,8 +107,8 @@ export default {
   }
   .upload {
     font-size: 12rem;
-    width: 25vw;
-    height: 25vw;
+    width: calc(100vw / 3);
+    width: calc(100vw / 3);
     position: relative;
     border: 0px solid #f7f7f9;
     display: flex;
