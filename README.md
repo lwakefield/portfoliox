@@ -1,27 +1,62 @@
 # portfoliox
 
-> A Vue.js project
+> A Vue.js + Firebase project
 
-## Build Setup
+This is a neat little portfolio platform to show off some pictures.
+It is super simple, using Vue.js as the framework and Firebase as the backend.
 
-``` bash
-# install dependencies
-npm install
+Images are cached in LocalStorage, so once visited for the first time,
+subsequent visits should be FAST
 
-# serve with hot reload at localhost:8080
-npm run dev
+![screenshot](https://i.imgur.com/dI4uheY.jpg)
 
-# build for production with minification
-npm run build
 
-# run unit tests
-npm run unit
+## Before anything else...
 
-# run e2e tests
-npm run e2e
+To get setup you need a Firebase app.
+If you try running against my Firebase app, it will work, but you wont be able 
+to login.
+I recommend search replacing all instances of
+`https://portfoliox.firebaseio.com/` to your app name, until I can be bothered
+to set up env config.
 
-# run all tests
-npm test
+The Firebase rules are as follows:
+
+```
+{
+    "rules": {
+        "users": {
+            ".write": "!data.exists()",
+            ".read": true
+        },
+        "images": {
+            ".write": "root.child('users').child(auth.uid).exists()",
+            ".read": true
+        },
+        "image_index": {
+            ".write": "root.child('users').child(auth.uid).exists()",
+            ".read": true
+        }
+    }
+}
 ```
 
-For detailed explanation on how things work, checkout the [guide](https://github.com/vuejs-templates/webpack#vue-webpack-boilerplate) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## Deploy
+
+To deploy to Firebase, change to your Firebase app, you can then run
+`npm run deploy` to build your app and deploy to firebase.
+
+```
+  //firebase.json
+  "firebase": "portfoliox",
+```
+
+## Local Dev
+
+To run locally `npm run dev`
+
+## Limitations
+
+The biggest issue at the moment, is that th caching in LocalStorage is limited
+to 4MB, or whatever your browser allows. Regardless of your browser, it isn't
+enough.
