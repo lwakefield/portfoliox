@@ -4,6 +4,7 @@
         :style="{backgroundImage: 'url(data:'+image.type+';base64,'+image.data+')'}"
         @click="selectedImage = image">
       </div>
+
       <div class="selected-image" v-if="selectedImage"
         :style="{backgroundImage: 'url(data:'+selectedImage.type+';base64,'+selectedImage.data+')'}"
         transition="fade">
@@ -11,6 +12,7 @@
         <button class="prev-image" @click="prevImage"><</button>
         <button class="next-image" @click="nextImage">></button>
       </div>
+
       <div class="upload" v-if="auth">
           <input type="file" @change.stop.prevent="droppedFile($event)">
           <span class="plus"></span>
@@ -81,7 +83,7 @@ export default {
   ready () {
     // inital load from cache
     localforage.iterate((key, value) => {
-      if (!key.startsWith('cachedImage.')) return
+      if (!key.startsWith || !key.startsWith('cachedImage.')) return
       this.images.push(value)
     })
 
