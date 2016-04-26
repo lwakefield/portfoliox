@@ -69,8 +69,8 @@ export default {
           // img does not exist in cache, or it has needs updating
           if (!img || img.hash !== hash) {
             this.$firebaseRefs.root.child(`images/${key}`).once('value', imageSnap => {
-              let image = localforage.setItem(`cachedImage.${key}`, Object.assign({hash},
-                imageSnap.val()))
+              let image = Object.assign({hash}, imageSnap.val())
+              localforage.setItem(`cachedImage.${key}`, image)
               this.images.push(image)
             })
           } else {
