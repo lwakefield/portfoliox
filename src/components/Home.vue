@@ -21,6 +21,7 @@
 <script>
 import Firebase from 'firebase'
 import crypto from 'crypto'
+import localforage from 'localforage'
 export default {
   data () {
     return {images: [], selectedImage: undefined}
@@ -52,36 +53,42 @@ export default {
       let index = this.images.findIndex(i => i === this.selectedImage)
       if (index === 0) this.selectedImage = this.images[this.images.length - 1]
       else this.selectedImage = this.images[index - 1]
+    },
+    updateImages (index) {
+      let imageIndex = Object.keys(index).map(key => {
+        return {key, hash: index[key]}
+      })
+
+      this.images = []
+      imageIndex.forEach(val => {
+        let key = val.key
+        let hash = val.hash
+        localforage.getItem(`cachedImage.${key}`).then(img => {
+          // img does not exist in cache, or it has needs updating
+          if (!img || img.hash !== hash) {
+            this.$firebaseRefs.root.child(`images/${key}`).once('value', imageSnap => {
+              let image = localforage.setItem(`cachedImage.${key}`, Object.assign({hash},
+                imageSnap.val()))
+              this.images.push(image)
+            })
+          } else {
+            this.images.push(img)
+          }
+        })
+      })
     }
   },
   ready () {
-    let keys = Object.keys(localStorage)
-    keys.forEach(key => {
+    // inital load from cache
+    localforage.iterate((key, value) => {
       if (!key.startsWith('cachedImage.')) return
-      let image = JSON.parse(localStorage[key])
-      this.images.push(image)
+      this.images.push(value)
     })
 
+    // update images for any changes
     this.$firebaseRefs.imageIndex.on('value', indexSnap => {
-      let val = indexSnap.val()
-      if (!val) return
-      let keys = Object.keys(val)
-      this.images = []
-      for (let key of keys) {
-        let hash = val[key]
-        let imageString = localStorage[`cachedImage.${key}`]
-        let image = imageString ? JSON.parse(imageString) : undefined
-        if (!image || image.hash !== hash) {
-          this.$firebaseRefs.root.child(`images/${key}`).once('value', imageSnap => {
-            image = imageSnap.val()
-            image.hash = hash
-            localStorage[`cachedImage.${key}`] = JSON.stringify(image)
-            this.images.push(image)
-          })
-        } else {
-          this.images.push(image)
-        }
-      }
+      if (!indexSnap.val()) return
+      this.updateImages(indexSnap.val())
     })
   }
 }
